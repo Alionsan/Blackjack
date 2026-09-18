@@ -52,6 +52,15 @@ public class ControladorMesa {
         mano.voltearTodas();
     }
 
+    public void deshacerMovimientoJugador(){
+        if(turnoActual == 0 || (turnoActual == 1 && juegoPrincipal.getManoJugador().sePaso())){
+            juegoPrincipal.deshacerUltimoMovimiento();
+            if (juegoPrincipal.puedeJugar()) {
+                turnoActual = 0;
+            }
+        }
+    }
+
     public void jugadorRoba() {
         if (turnoActual == 0 && juegoPrincipal.puedeJugar()) {
             juegoPrincipal.pedirCarta();
@@ -93,13 +102,17 @@ public class ControladorMesa {
             case 4:
                 if (juegoPrincipal.puedeJugar()) {
                     juegoPrincipal.quedarse();
+                    if (!juegoPrincipal.puedeJugar()) {
+                        turnoActual = 5;
+                    }
                 } else {
                     Mano crupier = juegoPrincipal.getManoCrupier();
-                    while (crupier.calcularValor() < 17) {
+                    if (crupier.calcularValor() < 17) {
                         robarBot(crupier);
+                    } else {
+                        turnoActual = 5;
                     }
                 }
-                turnoActual = 5;
                 break;
         }
     }

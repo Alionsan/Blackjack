@@ -2,6 +2,7 @@ package blackjack;
 
 import DeckOfCards.CartaInglesa;
 import DeckOfCards.Mazo;
+import pila.Pila;
 
 public class BlackjackJuego {
 
@@ -17,11 +18,13 @@ public class BlackjackJuego {
     private Estado estado;
     private Mano manoJugador;
     private Mano manoCrupier;
+    private Pila<String> historialMovimientos;
 
     public void nuevaRonda(){
         mazo = new Mazo();
         manoJugador = new Mano();
         manoCrupier = new Mano();
+        historialMovimientos = new Pila<>(20);
         estado = Estado.EN_CURSO;
 
         repartirAlJugador();
@@ -66,6 +69,9 @@ public class BlackjackJuego {
         if(estado != Estado.EN_CURSO){
             return;
         }
+
+        historialMovimientos.push("ROBO");
+
         CartaInglesa carta = mazo.obtenerUnaCarta();
         carta.makeFaceUp();
         manoJugador.agregarCarta(carta);
@@ -76,19 +82,38 @@ public class BlackjackJuego {
         }
     }
 
+    public void deshacerUltimoMovimiento(){
+        if(historialMovimientos.pilaVacia()){
+            return;
+        }
+
+        String ultimoMovimiento = historialMovimientos.pop();
+
+        if(ultimoMovimiento.equals("ROBO")){
+            int ultimaPosicion = manoJugador.getCartas().size()-1;
+            CartaInglesa cartaDevuelva = manoJugador.getCartas().remove(ultimaPosicion);
+
+            mazo.devolverCarta(cartaDevuelva);
+
+            if(estado == Estado.CRUPIER_GANA){
+                estado = Estado.EN_CURSO;
+            }
+        }
+    }
+
     public void quedarse(){
         if (estado != Estado.EN_CURSO){
             return;
         }
         manoCrupier.voltearTodas();
 
-        while (manoCrupier.calcularValor() < 17){
+        if (manoCrupier.calcularValor() < 17){
             CartaInglesa carta = mazo.obtenerUnaCarta();
             carta.makeFaceUp();
             manoCrupier.agregarCarta(carta);
+        } else {
+            determinarGanador();
         }
-
-        determinarGanador();
     }
 
     private void determinarGanador(){

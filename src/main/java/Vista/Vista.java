@@ -39,11 +39,13 @@ public class Vista extends StackPane {
     private StackPane drawPile;
     private Button btnRobar;
     private Button btnQuedarse;
+    private Button btnDeshacer;
 
     private VBox overlayFinJuego;
     private Label lblMensajeFin;
     private Button btnReintentar;
     private VBox menuInicial;
+    private PauseTransition pausaBots;
 
     public Vista() {
         controlador = new ControladorMesa();
@@ -78,7 +80,9 @@ public class Vista extends StackPane {
 
         btnRobar = new Button("Robar");
         btnQuedarse = new Button("Quedarse");
-        HBox cajaBotones = new HBox(15, btnRobar, btnQuedarse);
+        btnDeshacer = new Button("Deshacer");
+
+        HBox cajaBotones = new HBox(15, btnRobar, btnQuedarse, btnDeshacer);
         cajaBotones.setAlignment(Pos.CENTER);
 
         VBox panelJ1 = new VBox(10, crearEtiquetaBlanca("Jugador 1 (Tú)"), cajaJugador1, lblPtsJ1, cajaBotones);
@@ -105,6 +109,7 @@ public class Vista extends StackPane {
         drawPile.setOnMouseClicked(e -> accionRobar());
         btnRobar.setOnAction(e -> accionRobar());
         btnQuedarse.setOnAction(e -> accionQuedarse());
+        btnDeshacer.setOnAction(e -> accionDeshacer());
 
         VBox cajaDrawPile = new VBox(5, drawPile, crearEtiquetaBlanca("Pila de robo"));
         cajaDrawPile.setAlignment(Pos.CENTER);
@@ -199,6 +204,12 @@ public class Vista extends StackPane {
         return lbl;
     }
 
+    private void accionDeshacer() {
+        controlador.deshacerMovimientoJugador();
+        actualizarTablero();
+        pausaBots.stop();
+    }
+
     private void accionRobar() {
         controlador.jugadorRoba();
         actualizarTablero();
@@ -220,11 +231,12 @@ public class Vista extends StackPane {
     private void procesarTurnosBots() {
         btnRobar.setDisable(true);
         btnQuedarse.setDisable(true);
+        //btnDeshacer.setDisable(true);
         drawPile.setDisable(true);
 
-        PauseTransition pausa = new PauseTransition(Duration.millis(800));
+        PauseTransition pausa = new PauseTransition(Duration.millis(1100));
         pausa.setOnFinished(e -> {
-
+            btnDeshacer.setDisable(true);
             controlador.jugarSiguienteTurno();
             actualizarTablero();
 
@@ -253,10 +265,12 @@ public class Vista extends StackPane {
         if (!controlador.juegoEnCurso() || controlador.esTurnoDeBots() || controlador.esFinDeRonda()) {
             btnRobar.setDisable(true);
             btnQuedarse.setDisable(true);
+            btnDeshacer.setDisable(controlador.esFinDeRonda());
             drawPile.setDisable(true);
         } else {
             btnRobar.setDisable(false);
             btnQuedarse.setDisable(false);
+            btnDeshacer.setDisable(false);
             drawPile.setDisable(false);
         }
     }

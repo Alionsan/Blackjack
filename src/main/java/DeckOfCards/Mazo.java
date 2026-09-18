@@ -16,7 +16,7 @@ public class Mazo {
 
     public Mazo() {
         cartas = new Pila<>(52);
-
+        llenarYMezclar();
     }
 
     public CartaInglesa obtenerUnaCarta(){
@@ -54,25 +54,15 @@ public class Mazo {
      * Obtiene todas las cartas del mazo.
      * @return
      */
-    public ArrayList<CartaInglesa> getCartas() {
+    public Pila<CartaInglesa> getCartas() {
         return cartas;
     }
 
-    private void mezclar() {
-        Collections.shuffle(cartas);
-    }
 
-    private void llenar() {
-        for (int i = 2; i <=14 ; i++) {
-            for (Palo palo : Palo.values()) {
-                CartaInglesa c = new CartaInglesa(i,palo, palo.getColor());
-                cartas.add(c);
-            }
-        }
-    }
 
-    public void ordenar() {
-        Collections.sort(cartas);
+    public void devolverCarta(CartaInglesa carta) {
+        carta.makeFaceDown();
+        cartas.push(carta);
     }
 
     @Override
