@@ -1,12 +1,5 @@
 package DeckOfCards;
-/**
- * Write a description of class Mazo here.
- *
- * @author (Cecilia Curlango Rosas)
- * @version (2025-2)
- */
-import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.Random;
 
 import pila.Pila;
@@ -50,10 +43,6 @@ public class Mazo {
         }
     }
 
-    /**
-     * Obtiene todas las cartas del mazo.
-     * @return
-     */
     public Pila<CartaInglesa> getCartas() {
         return cartas;
     }
@@ -62,7 +51,28 @@ public class Mazo {
 
     public void devolverCarta(CartaInglesa carta) {
         carta.makeFaceDown();
-        cartas.push(carta);
+
+        int cartasRestantes = cartas.getTope() + 1;
+
+        CartaInglesa[] arregloTemporal = new CartaInglesa[cartasRestantes + 1];
+
+        for(int i = 0; i < cartasRestantes; i++){
+            arregloTemporal[i] = cartas.pop();
+        }
+
+        arregloTemporal[cartasRestantes] = carta;
+
+        Random rand = new Random();
+        for (int i = arregloTemporal.length - 1; i > 0; i--) {
+            int j = rand.nextInt(i + 1);
+            CartaInglesa temp = arregloTemporal[i];
+            arregloTemporal[i] = arregloTemporal[j];
+            arregloTemporal[j] = temp;
+        }
+
+        for(CartaInglesa c : arregloTemporal){
+            cartas.push(c);
+        }
     }
 
     @Override

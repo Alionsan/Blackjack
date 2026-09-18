@@ -66,7 +66,7 @@ public class BlackjackJuego {
     }
 
     public void pedirCarta(){
-        if(estado != Estado.EN_CURSO){
+        if(estado != Estado.EN_CURSO || manoJugador.calcularValor() >= 21){
             return;
         }
 
